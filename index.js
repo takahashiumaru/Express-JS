@@ -11,6 +11,8 @@ const appRoute = require('./src/routes/user');
 
 app.use('/', appRoute);
 
-app.listen(8080, () => {
-    console.log('Server Berjalan di Port : 8080');
+const port = process.env.PORT || 8080;
+
+app.listen(port, () => {
+    console.log(`Server Berjalan di Port : ${port}`);
 });
