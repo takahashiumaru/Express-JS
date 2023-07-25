@@ -1,5 +1,5 @@
 const config = require('../../database');
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const pool = mysql.createPool(config);
 const express = require('express');
 const app = express();
