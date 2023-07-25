@@ -5,6 +5,11 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 
+const db = require("../model");
+const Query = db.query;
+// const Op = db.Sequelize.Op;
+
+
 pool.on('error', (err) => {
     console.error(err);
 });
@@ -79,39 +84,56 @@ module.exports = {
                 name: req.body.name
             };
             users.push(newUser);
-            if (users.length > 0) {
-                const name = users[users.length - 1].name;
-                const query = `INSERT INTO users (name) VALUES (?)`;
-
-                pool.query(query, [name], (error, results) => {
-                    console.log(results);
-                    if (error) {
-                        console.error('Error creating user:', error);
-                        if (error.code === 'ER_DUP_ENTRY') {
-                            res.status(500).json({
-                                success: false,
-                                message: "User with the provided name already exists"
-                            });
-                        } else {
-                            res.status(500).json({
-                                success: false,
-                                message: "Internal Server Error"
-                            });
-                        }
+            // Save Tutorial in the database
+            Query.create(newUser)
+                .then(data => {
+                    res.send(data);
+                })
+                .catch(err => {
+                    if (err.name === 'SequelizeUniqueConstraintError') {
+                        res.status(500).json({
+                            success: false,
+                            message: "User dengan nama yang telah diberikan sudah ada"
+                        });
                     } else {
-                        res.status(201).json({
-                            success: true,
-                            message: 'User created successfully',
-                            data: newUser
+                        res.status(500).send({
+                            message: "Terjadi kesalahan saat menambahkan user baru."
                         });
                     }
                 });
-            } else {
-                res.status(500).json({
-                    success: false,
-                    message: 'Internal Server Error'
-                });
-            }
+            // if (users.length > 0) {
+            //     const name = users[users.length - 1].name;
+            //     const query = `INSERT INTO users (name) VALUES (?)`;
+
+            //     pool.query(query, [name], (error, results) => {
+            //         console.log(results);
+            //         if (error) {
+            //             console.error('Error creating user:', error);
+            //             if (error.code === 'ER_DUP_ENTRY') {
+            //                 res.status(500).json({
+            //                     success: false,
+            //                     message: "User with the provided name already exists"
+            //                 });
+            //             } else {
+            //                 res.status(500).json({
+            //                     success: false,
+            //                     message: "Internal Server Error"
+            //                 });
+            //             }
+            //         } else {
+            //             res.status(201).json({
+            //                 success: true,
+            //                 message: 'User created successfully',
+            //                 data: newUser
+            //             });
+            //         }
+            //     });
+            // } else {
+            //     res.status(500).json({
+            //         success: false,
+            //         message: 'Internal Server Error'
+            //     });
+            // }
         }
     },
 
