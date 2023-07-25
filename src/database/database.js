@@ -1,8 +1,13 @@
-module.exports = {
+const dotenv = require('dotenv');
+const mysql = require('mysql');
+const config = require("../../index");
+// configraration with env. 
+dotenv.config();
+module.exports = mysql.createConnection({
     multipleStatements: true,
-    host: 'sql6.freesqldatabase.com',
-    user: 'sql6633206',
-    password: 'cwLxIzIESX',
-    database: 'sql6633206',
-    port: '3306',
-};
+    host: config.PORT,
+    user: `${process.env.USER_DB}`,
+    password: `${process.env.PASSWORD_DB}`,
+    database: `${process.env.DATABASE_DB}`,
+    port: `${process.env.PORT_DB}`
+});
